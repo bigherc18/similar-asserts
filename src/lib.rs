@@ -69,6 +69,19 @@ use std::time::Duration;
 use console::{style, Style};
 use similar::{Algorithm, ChangeTag, TextDiff};
 
+const TRUNCATE_THRESHOLD: usize = 1000;
+
+fn truncate(s: &str) -> String {
+    if s.chars().count() > TRUNCATE_THRESHOLD {
+        let start = &s[..TRUNCATE_THRESHOLD / 2];
+        let end = &s[s.len() - TRUNCATE_THRESHOLD / 2..];
+
+        "<truncated>".to_owned() + start + " ... " + end
+    } else {
+        s.to_owned()
+    }
+}
+
 #[cfg(feature = "serde")]
 #[doc(hidden)]
 pub mod serde_impl;
@@ -164,9 +177,9 @@ impl<'a> SimpleDiff<'a> {
             self.right_label,
             hint,
             self.left_label,
-            self.left(),
+            truncate(self.left()),
             self.right_label,
-            self.right(),
+            truncate(self.right()),
             &self,
             label_padding = self.label_padding(),
         );
